@@ -4,7 +4,7 @@ let localStream = null;
 let peer = null;
 let existingCall = null;
 
-navigator.mediaDevices.getUserMedia({video: true, audio: true})
+navigator.mediaDevices.getUserMedia({video: false, audio: true})
     .then(function (stream) {
         // Success
         $('#my-video').get(0).srcObject = stream;
@@ -37,6 +37,7 @@ peer.on('disconnected', function(){
 
 $('#make-call').submit(function(e){
     e.preventDefault();
+    // peer ID を指定して相手を呼び出す
     const call = peer.call($('#callto-id').val(), localStream);
     setupCallEventHandlers(call);
 });
@@ -46,6 +47,7 @@ $('#end-call').click(function(){
     existingCall.close();
 });
 
+// 着信があると call イベントが発火
 peer.on('call', function(call){
     call.answer(localStream);
     setupCallEventHandlers(call);
