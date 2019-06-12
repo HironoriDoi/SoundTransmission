@@ -38,7 +38,7 @@ peer.on('disconnected', function(){
 $('#make-call').submit(function(e){
     e.preventDefault();
     // peer ID を指定して相手を呼び出す
-    const call = peer.call($('#callto-id').val(), localStream, {audioCodec: 'Opus'});
+    const call = peer.call($('#callto-id').val(), localStream);
     setupCallEventHandlers(call);
 });
 
