@@ -4,16 +4,87 @@ let localStream = null;
 let peer = null;
 let existingCall = null;
 
-navigator.mediaDevices.getUserMedia({video: false, audio: true})
+
+navigator.mediaDevices.enumerateDevices()
+    .then(function(devices)
+    { // 成功時
+        devices.forEach(function(device)
+        {
+            // audio input を dropdown に追加
+            if(device.kind == 'audioinput')
+            {
+                $('#audio_in').append($("<option>").val(device.deviceId).text(device.label));
+                //console.log(device.kind + ": " + device.label);
+            }
+
+            if(device.kind == 'audiooutput')
+            {
+                $('#audio_out').append($("<option>").val(device.deviceId).text(device.label));
+                //console.log(device.kind + ": " + device.label);
+            }
+            
+        });
+    })
+    .catch(function(err)
+    { // エラー発生時
+        console.error('enumerateDevide ERROR:', err);
+    });
+
+
+$('#audio_in').change(isInputAudioChanged);
+$('#audio_out').change(isOutputAudioChanged);
+
+$('#audio_in').selectedIndex = 0;
+
+isInputAudioChanged();  // default を選ぶ（初期設定）
+//isOutputAudioChanged();
+
+//var isInputAudioChanged
+function isInputAudioChanged()
+{
+    var device = $('#audio_in').val();
+    console.log(device);
+
+    var constraints = {
+        video: false, 
+        audio: {
+            deviceId: device, 
+            channelCount: 2, 
+            echoCancellation: false
+        }
+    }
+
+    navigator.mediaDevices.getUserMedia(constraints)
     .then(function (stream) {
         // Success
-        $('#my-video').get(0).srcObject = stream;
+        //$('#my-video').get(0).srcObject = stream;
         localStream = stream;
     }).catch(function (error) {
         // Error
         console.error('mediaDevice.getUserMedia() error:', error);
         return;
     });
+}
+
+function isOutputAudioChanged()
+{
+    var out_audio_id = $('#audio_out').val();
+
+    const audioElement = document.getElementById("their-video");
+    //const audioElement = document.querySelector("audio_out");
+
+    //$('#their-video').setSinkId(out_audio_id)
+    audioElement.setSinkId(out_audio_id)
+    .then(function() 
+    {
+         console.log('setSinkID Success');
+    })
+    .catch(function(err) 
+    {
+        console.error('setSinkId Err:', err);
+    });
+}
+
 
 
 peer = new Peer({
@@ -38,6 +109,7 @@ peer.on('disconnected', function(){
 $('#make-call').submit(function(e){
     e.preventDefault();
     // peer ID を指定して相手を呼び出す
+    //const call = peer.call($('#callto-id').val(), localStream, {audioCodec: 'Opus'});
     const call = peer.call($('#callto-id').val(), localStream);
     setupCallEventHandlers(call);
 });
