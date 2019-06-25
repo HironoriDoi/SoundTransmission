@@ -49,7 +49,7 @@ function isInputAudioChanged()
         video: false, 
         audio: {
             deviceId: device, 
-            channelCount: 2, 
+            channelCount: 1, 
             echoCancellation: false
         }
     }
@@ -71,9 +71,7 @@ function isOutputAudioChanged()
     var out_audio_id = $('#audio_out').val();
 
     const audioElement = document.getElementById("their-video");
-    //const audioElement = document.querySelector("audio_out");
 
-    //$('#their-video').setSinkId(out_audio_id)
     audioElement.setSinkId(out_audio_id)
     .then(function() 
     {
