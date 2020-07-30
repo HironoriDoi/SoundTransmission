@@ -48,7 +48,7 @@ $('#end-call').click(function(){
 
 peer.on('call', function (call) {
     call.answer(localStream, localStream, {
-        videoCodec: 'H264',
+        videoCodec: 'VP8',
     });
     setupCallEventHandlers(call);
 });
